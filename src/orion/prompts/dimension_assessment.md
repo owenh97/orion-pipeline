@@ -1,6 +1,6 @@
 <!--
 prompt: dimension_assessment
-version: 1.1.0
+version: 1.2.0
 
 Design notes (these are not sent to the model -- the loader strips nothing, but
 HTML comments cost a handful of tokens and keep the rationale next to the
@@ -72,8 +72,15 @@ Rules you must follow:
    even if you notice them in the passages.
 
 2. Base every statement on the passages above or on the declared metadata.
-   Cite the passages you relied on using their exact citation markers. Do not
-   cite a marker that does not appear above.
+   Cite the passages you relied on.
+
+   Each passage begins with a marker of the form [chunk:DOC-XXX:NNN] -- a
+   document prefix, a colon, then three digits. When you cite, copy that
+   identifier exactly as it appears, for example DOC-003:001. A document id on
+   its own, such as DOC-003, is NOT a valid citation: it does not identify a
+   passage and it will be discarded, which will lower the confidence recorded
+   against your assessment. Do not cite an identifier that does not appear
+   above.
 
 3. Treat absence of evidence as a finding, not as reassurance. If the applicant
    declares an activity that would require a control and no passage evidences

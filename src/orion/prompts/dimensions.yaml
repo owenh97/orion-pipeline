@@ -22,7 +22,7 @@
 # systemic harm and that the authority would be held accountable for.
 # ---------------------------------------------------------------------------
 
-version: "1.1.0"
+version: "1.2.0"
 
 dimensions:
   - key: financial_soundness
@@ -37,11 +37,14 @@ dimensions:
       Definition: "headroom" means own funds expressed as a percentage above
       the stated regulatory requirement. Headroom below 10 per cent is thin.
 
-      FLOOR: where the most recent financial figures are unaudited, this
-      dimension may not score below 45 however strong those figures appear.
-      Unaudited accounts are the firm's own description of its position, not
-      an independently verified one, and the assessment being performed is of
-      evidence rather than of assertion.
+      FLOOR (a minimum, not a target): where the most recent financial figures
+      are unaudited, this dimension cannot score below 45. Apply the bands
+      below first and take the worst band that applies; only then raise the
+      result to 45 if it would otherwise have fallen lower. A firm that is
+      unaudited AND meets a condition in the 66-85 band scores in 66-85, not
+      45. The floor exists because unaudited accounts are the firm's own
+      description of its position rather than an independently verified one,
+      and what is being assessed is evidence rather than assertion.
 
       0-20: audited statements for the most recent financial year, headroom
       above 25 per cent, profitable or loss-making with an executed funding
