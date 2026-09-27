@@ -29,9 +29,18 @@ docker build -t orion . && docker run --rm orion
 
 **The model judges evidence. Python makes the decision.**
 
-The LLM is asked for one thing only: a risk rating on a single dimension, grounded in passages it is shown, with citations, gaps and a confidence. It never computes the composite score and never selects the authorisation level. Those are produced by `src/orion/stages/aggregate.py`, which contains no model calls and no randomness.
+The AI reads the submitted documents and produces, for each risk area, a rating with the passages it used, what's missing, and how confident it is.
 
-This is not stylistic caution. An authorisation outcome has to be explainable to the applicant and defensible to an oversight body. If a model chose the outcome, the same submission could yield a different decision on a different day and the reasoning would be unfalsifiable. Because the decision is a weighted score plus a set of explicit gates, a reviewer can be handed the file and verify the outcome by reading it.
+It never computes the composite score and never selects the authorisation
+level. That happens in `src/orion/stages/aggregate.py` — a weighted average of
+the six ratings plus a set of hard gates, containing no model calls and no
+randomness.
+
+This is not stylistic caution. If ORION declines a firm, that firm's lawyers
+will ask why, and the answer has to be reproducible. A weighted score and an
+explicit rulebook can be handed over and checked line by line. A model's
+verdict cannot: the same submission could score differently on a different
+day, and there would be nothing to point at but the output itself.
 
 ---
 
