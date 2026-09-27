@@ -22,7 +22,7 @@
 # systemic harm and that the authority would be held accountable for.
 # ---------------------------------------------------------------------------
 
-version: "1.2.0"
+version: "1.3.0"
 
 dimensions:
   - key: financial_soundness
@@ -34,30 +34,44 @@ dimensions:
       funds, liquidity, audited results, and the quality of financial
       disclosure.
     rating_guidance: >
-      Definition: "headroom" means own funds expressed as a percentage above
-      the stated regulatory requirement. Headroom below 10 per cent is thin.
+      Definitions used below. "Headroom" means own funds expressed as a
+      percentage above the stated regulatory requirement; headroom below 10 per
+      cent is thin. A funding facility counts as EXECUTED only where the
+      evidence shows it signed, drawn or otherwise legally committed. A
+      facility described as discussed, planned, intended, expected, proposed,
+      under negotiation or agreed in principle is NOT executed, and the firm
+      must be treated as having no funding arrangement in place.
 
-      FLOOR (a minimum, not a target): where the most recent financial figures
-      are unaudited, this dimension cannot score below 45. Apply the bands
-      below first and take the worst band that applies; only then raise the
-      result to 45 if it would otherwise have fallen lower. A firm that is
-      unaudited AND meets a condition in the 66-85 band scores in 66-85, not
-      45. The floor exists because unaudited accounts are the firm's own
-      description of its position rather than an independently verified one,
-      and what is being assessed is evidence rather than assertion.
+      Work through the bands in order and select the worst band whose
+      conditions are met.
 
       0-20: audited statements for the most recent financial year, headroom
       above 25 per cent, profitable or loss-making with an executed funding
       facility in place, no going-concern qualification.
       21-45: audited figures, but headroom between 10 and 25 per cent, or a
       recent loss offset by an executed facility.
-      46-65: figures unaudited or incomplete, or headroom below 10 per cent
-      with the business otherwise stable.
-      66-85: own funds below the stated requirement, or loss-making with no
-      executed funding arrangement, or material unexplained discrepancies
-      between stated and evidenced figures.
+      46-65: figures unaudited or incomplete, or headroom below 10 per cent,
+      with the business otherwise stable and not loss-making.
+      66-85: ANY of the following, regardless of how favourable the other
+      indicators appear -- own funds below the stated requirement; a loss in
+      the most recent financial year without an executed funding facility;
+      material unexplained discrepancies between stated and evidenced figures.
       86-100: insolvency indicators, or a financial position that cannot be
       substantiated from the evidence at all.
+
+      Worked example. A firm reports own funds of 6.2m against a 5.8m
+      requirement (6.9 per cent headroom, thin), on unaudited management
+      accounts, having lost 1.1m in the year, with a shareholder facility
+      described as discussed but not executed. Thin headroom and unaudited
+      figures each point at 46-65. But the loss without an executed facility
+      meets a 66-85 condition, and the worst matching band governs. The
+      correct score is in 66-85, not 46-65 and not 45.
+
+      Minimum. Where the most recent figures are unaudited, the score cannot
+      end up below the 46-65 band, however strong the figures appear:
+      unaudited accounts are the firm's own description of its position rather
+      than an independently verified one. This is a floor applied after the
+      bands, never a score to settle on.
     keywords:
       - own funds
       - capital adequacy

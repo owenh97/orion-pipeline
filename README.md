@@ -152,6 +152,38 @@ tests/                      29 tests, no network required
 
 ---
 
+## A failure found during testing
+
+The first live run scored `financial_soundness` at 45 while every other
+dimension scored above 75 — despite a rationale that correctly identified
+every adverse fact: 6.9% headroom against a 10% threshold, unaudited
+accounts, a €1.1m loss, and a funding facility discussed but not executed.
+Those facts place the firm in the 66–85 band.
+
+The same run also returned document ids (`DOC-003`) where chunk ids
+(`DOC-003:001`) were required. All four citations were rejected by the
+citation verifier and confidence was capped at 0.4 — that layer working as
+designed — but the prompt had never specified the identifier format.
+
+The citation defect was fixed in one pass (`1.2.0`) by stating the format
+with a worked example. The scoring defect took three. Naming the floor value
+in prose (`1.1.0`) and then restating it as "a minimum, not a target"
+(`1.2.0`) both failed: the model anchored on the number. What worked
+(`1.3.0`) was removing the number from the floor entirely, moving it below
+the bands, defining "executed" explicitly so a facility "discussed but not
+executed" could not read as a funding plan, and adding a worked example that
+walks the firm's own figures to the correct band. The score moved to 66.
+
+Two things are worth recording from this. Editing only the citation
+instruction moved unrelated dimensions by up to 11 points, which is the
+clearest argument for the evaluation harness described under Limitations.
+And a constraint that must always hold does not belong in a prompt: the
+unaudited floor should be enforced in `aggregate.py` alongside the gates,
+where it is deterministic and testable. Prompts persuade; code enforces.
+Putting that rule in the prompt was the wrong side of this project's own
+central design decision.
+
+
 ## Limitations
 
 No evaluation set. The honest position is that this pipeline's judgement quality is currently unmeasured: with a labelled set of submissions and analyst-assigned ratings, the right next step is per-dimension agreement scoring plus a regression suite over the prompts, with `dimensions.yaml` and the prompt versions as the axes being tuned. The deterministic aggregation layer is already fully covered by tests; the model-dependent layer is not, and pretending otherwise would be the wrong claim to make.
@@ -161,3 +193,4 @@ Retrieval is lexical by default. `--retrieval embedding` swaps in OpenAI embeddi
 Chunking is character-based and structure-aware only at the page, heading and worksheet level. Tables inside PDFs are extracted as text and can lose column alignment.
 
 Scanned or image-only PDFs are not handled; they would need an OCR step ahead of extraction.
+
