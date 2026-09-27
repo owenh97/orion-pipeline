@@ -41,8 +41,17 @@ from ..models import (
 # ---------------------------------------------------------------------------
 
 # Composite score bands (risk score: 0 = clean, 100 = severe).
+#
+# FULL_AUTHORISATION is deliberately absent from this table: the pipeline will
+# never recommend unconditional approval. A firm applying to hold client money
+# or run settlement infrastructure is being admitted to a supervised activity,
+# and admission in practice always carries reporting and notification
+# conditions. A system that could output "approved, nothing further required"
+# would be modelling a decision this authority does not actually make.
+#
+# The level still exists in the enum, because a human reviewer may override to
+# it. What is removed is the pipeline's ability to arrive there on its own.
 THRESHOLDS: list[tuple[float, AuthorizationLevel]] = [
-    (20.0, AuthorizationLevel.FULL_AUTHORISATION),
     (40.0, AuthorizationLevel.AUTHORISATION_WITH_CONDITIONS),
     (60.0, AuthorizationLevel.PROVISIONAL_AUTHORISATION),
     (80.0, AuthorizationLevel.REFER_TO_COMMITTEE),
@@ -54,8 +63,15 @@ THRESHOLDS: list[tuple[float, AuthorizationLevel]] = [
 MIN_MEAN_CONFIDENCE = 0.35
 MIN_EVIDENCED_FRACTION = 0.5
 
-# A severity at or above this in any single dimension cannot be averaged away.
-ESCALATION_SEVERITIES = {Severity.CRITICAL}
+# A severity at this level in any single dimension cannot be averaged away.
+#
+# HIGH is included alongside CRITICAL. The trade-off is explicit: including it
+# sends more files to committee and therefore costs reviewer time, and some of
+# those files will turn out fine. That is the right side to err on. The two
+# error types are not symmetric -- an unnecessary committee review costs an
+# hour, while a high-severity control failure waved through by averaging costs
+# the authority its credibility and, potentially, somebody's client money.
+ESCALATION_SEVERITIES = {Severity.HIGH, Severity.CRITICAL}
 
 # Ordering used when a gate caps (never raises) the outcome.
 _SEVERITY_ORDER = [
@@ -127,13 +143,17 @@ def evaluate_gates(assessments: list[DimensionAssessment], coverage: Coverage,
     that fires. A gate can only make the outcome stricter, never more lenient."""
     gates: list[tuple[str, AuthorizationLevel, str]] = []
 
-    # G1 - a single critical finding always reaches a human.
-    critical = [a.dimension for a in assessments if a.severity in ESCALATION_SEVERITIES]
-    if critical:
+    # G1 - a single severe finding always reaches a human.
+    severe = [
+        f"{a.dimension} ({a.severity.value})"
+        for a in assessments
+        if a.severity in ESCALATION_SEVERITIES
+    ]
+    if severe:
         gates.append((
-            "G1_CRITICAL_FINDING",
+            "G1_SEVERE_FINDING",
             AuthorizationLevel.REFER_TO_COMMITTEE,
-            f"Critical severity recorded in: {', '.join(critical)}.",
+            f"Severity at or above 'high' recorded in: {', '.join(severe)}.",
         ))
 
     # G2 - not enough confident, evidence-backed assessment to justify a verdict.

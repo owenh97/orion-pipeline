@@ -83,18 +83,26 @@ def test_composite_is_bounded():
 @pytest.mark.parametrize(
     "score,expected",
     [
-        (0.0, AuthorizationLevel.FULL_AUTHORISATION),
-        (19.9, AuthorizationLevel.FULL_AUTHORISATION),
-        (20.0, AuthorizationLevel.AUTHORISATION_WITH_CONDITIONS),
+        (0.0, AuthorizationLevel.AUTHORISATION_WITH_CONDITIONS),
         (39.9, AuthorizationLevel.AUTHORISATION_WITH_CONDITIONS),
         (40.0, AuthorizationLevel.PROVISIONAL_AUTHORISATION),
+        (59.9, AuthorizationLevel.PROVISIONAL_AUTHORISATION),
         (60.0, AuthorizationLevel.REFER_TO_COMMITTEE),
+        (79.9, AuthorizationLevel.REFER_TO_COMMITTEE),
         (80.0, AuthorizationLevel.DECLINE),
         (100.0, AuthorizationLevel.DECLINE),
     ],
 )
 def test_threshold_boundaries(score, expected):
     assert aggregate.level_from_score(score) is expected
+
+
+def test_pipeline_never_recommends_unconditional_approval():
+    """Policy decision: admission to a supervised activity always carries
+    conditions, so the pipeline must not be able to reach FULL_AUTHORISATION
+    on its own. The level remains available as a human override."""
+    for score in range(0, 101):
+        assert aggregate.level_from_score(float(score)) is not AuthorizationLevel.FULL_AUTHORISATION
 
 
 # --- gates -----------------------------------------------------------------
@@ -105,29 +113,50 @@ def test_critical_finding_escalates_a_clean_average():
     averaging away one disqualifying one."""
     assessments = [make("a", 5, Severity.LOW), make("b", 5, Severity.CRITICAL)]
     gates = aggregate.evaluate_gates(assessments, healthy_coverage(), [], [])
-    assert any(g[0] == "G1_CRITICAL_FINDING" for g in gates)
+    assert any(g[0] == "G1_SEVERE_FINDING" for g in gates)
 
-    final, ids = aggregate.apply_gates(AuthorizationLevel.FULL_AUTHORISATION, gates)
+    final, ids = aggregate.apply_gates(AuthorizationLevel.AUTHORISATION_WITH_CONDITIONS, gates)
     assert final is AuthorizationLevel.REFER_TO_COMMITTEE
+
+
+def test_high_severity_also_escalates():
+    """Deliberately stricter than critical-only. One high-severity control
+    failure reaches a human even when the composite looks acceptable, because
+    an unnecessary committee review is far cheaper than a waved-through
+    failure."""
+    assessments = [make("a", 10, Severity.LOW), make("b", 10, Severity.HIGH)]
+    gates = aggregate.evaluate_gates(assessments, healthy_coverage(), [], [])
+    assert any(g[0] == "G1_SEVERE_FINDING" for g in gates)
+
+    final, _ = aggregate.apply_gates(AuthorizationLevel.AUTHORISATION_WITH_CONDITIONS, gates)
+    assert final is AuthorizationLevel.REFER_TO_COMMITTEE
+
+
+def test_elevated_severity_does_not_escalate():
+    """The boundary of the rule above: 'elevated' is handled through the score
+    bands and conditions, not by committee."""
+    assessments = [make("a", 10, Severity.LOW), make("b", 10, Severity.ELEVATED)]
+    gates = aggregate.evaluate_gates(assessments, healthy_coverage(), [], [])
+    assert not any(g[0] == "G1_SEVERE_FINDING" for g in gates)
 
 
 def test_low_confidence_forces_insufficient_information():
     coverage = healthy_coverage(mean_confidence=0.2)
     gates = aggregate.evaluate_gates([make("a", 10)], coverage, [], [])
-    final, _ = aggregate.apply_gates(AuthorizationLevel.FULL_AUTHORISATION, gates)
+    final, _ = aggregate.apply_gates(AuthorizationLevel.AUTHORISATION_WITH_CONDITIONS, gates)
     assert final is AuthorizationLevel.INSUFFICIENT_INFORMATION
 
 
 def test_unevidenced_dimensions_force_insufficient_information():
     coverage = healthy_coverage(evidence_backed_dimensions=0)
     gates = aggregate.evaluate_gates([make("a", 10, evidenced=False)], coverage, [], [])
-    final, _ = aggregate.apply_gates(AuthorizationLevel.FULL_AUTHORISATION, gates)
+    final, _ = aggregate.apply_gates(AuthorizationLevel.AUTHORISATION_WITH_CONDITIONS, gates)
     assert final is AuthorizationLevel.INSUFFICIENT_INFORMATION
 
 
 def test_missing_documents_force_insufficient_information():
     gates = aggregate.evaluate_gates([make("a", 10)], healthy_coverage(), [], ["DOC-009"])
-    final, ids = aggregate.apply_gates(AuthorizationLevel.FULL_AUTHORISATION, gates)
+    final, ids = aggregate.apply_gates(AuthorizationLevel.AUTHORISATION_WITH_CONDITIONS, gates)
     assert final is AuthorizationLevel.INSUFFICIENT_INFORMATION
     assert "G4_MISSING_DOCUMENTS" in ids
 
@@ -135,7 +164,7 @@ def test_missing_documents_force_insufficient_information():
 def test_blocking_question_caps_at_provisional():
     q = FollowUpQuestion(question_id="Q01", dimension="a", question="?", reason="", blocking=True)
     gates = aggregate.evaluate_gates([make("a", 5)], healthy_coverage(), [q], [])
-    final, _ = aggregate.apply_gates(AuthorizationLevel.FULL_AUTHORISATION, gates)
+    final, _ = aggregate.apply_gates(AuthorizationLevel.AUTHORISATION_WITH_CONDITIONS, gates)
     assert final is AuthorizationLevel.PROVISIONAL_AUTHORISATION
 
 
@@ -159,9 +188,11 @@ def test_insufficient_information_is_absorbing():
 
 
 def test_clean_submission_passes_ungated():
+    """A genuinely clean file triggers no gates and lands in the best band the
+    pipeline can reach, which is now 'with conditions' rather than full."""
     assessments = [make("a", 8, Severity.LOW), make("b", 12, Severity.LOW)]
     score, _ = aggregate.composite_score(assessments, DIMENSIONS)
     gates = aggregate.evaluate_gates(assessments, healthy_coverage(), [], [])
     final, ids = aggregate.apply_gates(aggregate.level_from_score(score), gates)
     assert ids == []
-    assert final is AuthorizationLevel.FULL_AUTHORISATION
+    assert final is AuthorizationLevel.AUTHORISATION_WITH_CONDITIONS
