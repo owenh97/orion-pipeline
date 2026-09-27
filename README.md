@@ -66,19 +66,23 @@ document set   ───┘  validate    PDF/DOCX/    per-dim    1 LLM      cons
 
 The composite is deliberately **not** weighted by the model's self-reported confidence. Doing so would shrink the influence of exactly those dimensions where evidence is thin — which is where risk hides. Low confidence is handled by a gate that stops the pipeline issuing a verdict at all.
 
-**Bands.** `<20` full · `<40` with conditions · `<60` provisional · `<80` refer to committee · `≥80` decline.
+**Bands.** `<40` authorise with conditions · `<60` provisional · `<80` refer to committee · `≥80` decline.
+
+`FULL_AUTHORISATION` is deliberately unreachable. A firm applying to hold client money or run settlement infrastructure is being admitted to a *supervised* activity, and admission in practice always carries reporting and notification conditions. A system that could output "approved, nothing further required" would be modelling a decision this authority does not make. The level stays in the enum so a human reviewer can override to it; what is removed is the pipeline's ability to arrive there by itself.
 
 **Gates** are evaluated after the bands and may only make the outcome *stricter*:
 
 | Gate | Fires when | Effect |
 |---|---|---|
-| `G1_CRITICAL_FINDING` | Any dimension rated critical | Refer to committee |
+| `G1_SEVERE_FINDING` | Any dimension rated **high or critical** | Refer to committee |
 | `G2_INSUFFICIENT_EVIDENCE` | Mean confidence < 0.35, or fewer than half the dimensions evidence-backed | Insufficient information |
 | `G3_BLOCKING_CLARIFICATION` | A blocking follow-up question is outstanding | Cap at provisional |
 | `G4_MISSING_DOCUMENTS` | A referenced document could not be retrieved | Insufficient information |
 | `G5_INCOMPLETE_RUN` | A dimension failed to assess | Insufficient information |
 
 Gates exist because averaging has a specific, dangerous failure mode: five strong dimensions can bury one disqualifying finding. `G1` is what stops that, and `tests/test_aggregate.py::test_critical_finding_escalates_a_clean_average` pins the behaviour.
+
+`G1` fires on **high** as well as critical, which is stricter than it needs to be and is a deliberate trade. Including high sends more files to committee and some of those will turn out fine, costing reviewer time. The two error types are not symmetric: an unnecessary committee review costs an hour, whereas a high-severity control failure averaged away costs the authority its credibility and potentially somebody's client money. `test_elevated_severity_does_not_escalate` pins the other side of the boundary, so the rule cannot quietly widen further.
 
 `INSUFFICIENT_INFORMATION` is absorbing. If we lack the evidence to judge, no favourable arithmetic should produce an authorisation.
 
