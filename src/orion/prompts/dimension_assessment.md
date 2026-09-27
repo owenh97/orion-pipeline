@@ -1,6 +1,6 @@
 <!--
 prompt: dimension_assessment
-version: 1.0.0
+version: 1.1.0
 
 Design notes (these are not sent to the model -- the loader strips nothing, but
 HTML comments cost a handful of tokens and keep the rationale next to the
@@ -35,7 +35,14 @@ Dimension name: {dimension_name}
 What this dimension covers:
 {dimension_description}
 
-How to anchor your score on the 0-100 scale:
+How to anchor your score on the 0-100 scale.
+
+Where the evidence matches more than one band, use the WORST band that
+applies. A firm does not become safer because some of its other indicators are
+healthy, and averaging across bands would let a single serious weakness be
+diluted by unrelated strengths. Where the guidance below states a floor, that
+floor overrides the bands entirely.
+
 {rating_guidance}
 
 APPLICANT AS DECLARED IN THE SUBMISSION METADATA
