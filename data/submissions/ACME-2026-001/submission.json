@@ -1,0 +1,58 @@
+{
+  "submission_id": "ACME-2026-001",
+  "applicant_legal_name": "Meridian Clearing Services Ltd",
+  "applicant_country": "NL",
+  "incorporation_year": 2021,
+  "employee_count": 62,
+  "contact_email": "authorisations@meridian-clearing.example",
+  "declared_activities": [
+    {
+      "activity_code": "PAY-CLR-01",
+      "description": "Payment clearing and settlement netting for institutional clients",
+      "jurisdictions": ["NL", "DE", "LU"],
+      "estimated_annual_volume_eur": 480000000
+    },
+    {
+      "activity_code": "CUS-CLM-02",
+      "description": "Custody and safeguarding of client money",
+      "jurisdictions": ["NL"],
+      "estimated_annual_volume_eur": 61400000
+    },
+    {
+      "activity_code": "CUS-DIG-07",
+      "description": "Digital asset custody (planned launch 2026)",
+      "jurisdictions": ["NL", "LU"],
+      "estimated_annual_volume_eur": null
+    }
+  ],
+  "documents": [
+    {
+      "doc_id": "DOC-001",
+      "filename": "business_plan.pdf",
+      "uri": "local://submissions/ACME-2026-001/documents/business_plan.pdf",
+      "media_type": "pdf",
+      "declared_type": "Business plan"
+    },
+    {
+      "doc_id": "DOC-002",
+      "filename": "aml_policy.docx",
+      "uri": "local://submissions/ACME-2026-001/documents/aml_policy.docx",
+      "media_type": "docx",
+      "declared_type": "AML and financial crime policy"
+    },
+    {
+      "doc_id": "DOC-003",
+      "filename": "financial_summary.xlsx",
+      "uri": "local://submissions/ACME-2026-001/documents/financial_summary.xlsx",
+      "media_type": "xlsx",
+      "declared_type": "Financial statements summary"
+    },
+    {
+      "doc_id": "DOC-004",
+      "filename": "security_overview.pdf",
+      "uri": "local://submissions/ACME-2026-001/documents/security_overview.pdf",
+      "media_type": "pdf",
+      "declared_type": "Information security overview"
+    }
+  ]
+}
