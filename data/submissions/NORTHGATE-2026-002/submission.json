@@ -1,0 +1,58 @@
+{
+  "submission_id": "NORTHGATE-2026-002",
+  "applicant_legal_name": "Northgate Settlement Services Ltd",
+  "applicant_country": "NL",
+  "incorporation_year": 2016,
+  "employee_count": 88,
+  "contact_email": "authorisations@northgate-settlement.example",
+  "declared_activities": [
+    {
+      "activity_code": "PAY-CLR-01",
+      "description": "Payment clearing and settlement netting for institutional clients",
+      "jurisdictions": [
+        "NL",
+        "DE",
+        "LU"
+      ],
+      "estimated_annual_volume_eur": 1100000000
+    },
+    {
+      "activity_code": "CUS-CLM-02",
+      "description": "Custody and safeguarding of client money",
+      "jurisdictions": [
+        "NL"
+      ],
+      "estimated_annual_volume_eur": 142700000
+    }
+  ],
+  "documents": [
+    {
+      "doc_id": "DOC-001",
+      "filename": "business_plan.pdf",
+      "uri": "local://submissions/NORTHGATE-2026-002/documents/business_plan.pdf",
+      "media_type": "pdf",
+      "declared_type": "Business plan"
+    },
+    {
+      "doc_id": "DOC-002",
+      "filename": "aml_policy.docx",
+      "uri": "local://submissions/NORTHGATE-2026-002/documents/aml_policy.docx",
+      "media_type": "docx",
+      "declared_type": "AML and financial crime policy"
+    },
+    {
+      "doc_id": "DOC-003",
+      "filename": "financial_summary.xlsx",
+      "uri": "local://submissions/NORTHGATE-2026-002/documents/financial_summary.xlsx",
+      "media_type": "xlsx",
+      "declared_type": "Audited financial statements summary"
+    },
+    {
+      "doc_id": "DOC-004",
+      "filename": "security_and_resilience.pdf",
+      "uri": "local://submissions/NORTHGATE-2026-002/documents/security_and_resilience.pdf",
+      "media_type": "pdf",
+      "declared_type": "Security and operational resilience overview"
+    }
+  ]
+}
