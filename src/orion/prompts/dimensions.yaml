@@ -22,7 +22,7 @@
 # systemic harm and that the authority would be held accountable for.
 # ---------------------------------------------------------------------------
 
-version: "1.3.0"
+version: "1.4.0"
 
 dimensions:
   - key: financial_soundness
@@ -123,6 +123,16 @@ dimensions:
       - MLRO
       - beneficial owner
       - source of funds
+      # Added after a retrieval miss on the control submission: the passage
+      # evidencing independent testing scored zero because none of the terms
+      # above appear in it. A dimension's vocabulary must cover the language
+      # used to EVIDENCE a control, not only the language used to name it.
+      - financial crime
+      - independent testing
+      - independent assurance
+      - compliance function
+      - financial crime training
+      - risk-based approach
 
   - key: operational_resilience
     name: Operational Resilience & Continuity
@@ -155,6 +165,9 @@ dimensions:
       - single point of failure
       - capacity planning
       - backup
+      - operational resilience
+      - recovery objective
+      - failover test
 
   - key: cyber_information_security
     name: Cyber & Information Security
