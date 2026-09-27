@@ -22,7 +22,7 @@
 # systemic harm and that the authority would be held accountable for.
 # ---------------------------------------------------------------------------
 
-version: "1.0.0"
+version: "1.1.0"
 
 dimensions:
   - key: financial_soundness
@@ -34,14 +34,27 @@ dimensions:
       funds, liquidity, audited results, and the quality of financial
       disclosure.
     rating_guidance: >
-      0-20: audited statements present, capital comfortably above requirement,
-      no going-concern doubt.
-      21-45: adequate capital but limited audit assurance or thin buffers.
-      46-65: unaudited or incomplete figures, or buffers close to the minimum.
-      66-85: capital shortfall, loss-making with no funding plan, or material
-      unexplained discrepancies between stated and evidenced figures.
-      86-100: insolvency indicators, or financial position that cannot be
-      substantiated at all.
+      Definition: "headroom" means own funds expressed as a percentage above
+      the stated regulatory requirement. Headroom below 10 per cent is thin.
+
+      FLOOR: where the most recent financial figures are unaudited, this
+      dimension may not score below 45 however strong those figures appear.
+      Unaudited accounts are the firm's own description of its position, not
+      an independently verified one, and the assessment being performed is of
+      evidence rather than of assertion.
+
+      0-20: audited statements for the most recent financial year, headroom
+      above 25 per cent, profitable or loss-making with an executed funding
+      facility in place, no going-concern qualification.
+      21-45: audited figures, but headroom between 10 and 25 per cent, or a
+      recent loss offset by an executed facility.
+      46-65: figures unaudited or incomplete, or headroom below 10 per cent
+      with the business otherwise stable.
+      66-85: own funds below the stated requirement, or loss-making with no
+      executed funding arrangement, or material unexplained discrepancies
+      between stated and evidenced figures.
+      86-100: insolvency indicators, or a financial position that cannot be
+      substantiated from the evidence at all.
     keywords:
       - own funds
       - capital adequacy
