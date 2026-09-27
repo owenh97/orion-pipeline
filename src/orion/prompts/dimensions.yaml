@@ -1,0 +1,230 @@
+# ---------------------------------------------------------------------------
+# Risk dimension definitions.
+#
+# This file is the pipeline's policy surface. Changing it changes what the
+# system looks for, how heavily each concern counts, and what vocabulary drives
+# retrieval -- without touching a line of code. That separation is intentional:
+# a risk officer should be able to amend policy without a developer.
+#
+# The file is hashed into every audit record, so any assessment can be traced
+# back to the exact policy revision that produced it.
+#
+#   key            stable identifier, used everywhere downstream
+#   name           human label shown to reviewers
+#   weight         relative contribution to the composite score (normalised)
+#   description    what the model is being asked to judge
+#   rating_guidance  anchors the 0-100 scale so scores mean the same thing
+#                  across dimensions and across runs
+#   keywords       retrieval vocabulary for this dimension (lexical search)
+#
+# Weights reflect consequence, not effort. Financial crime and capital adequacy
+# carry the highest weight because failures there are the ones that cause
+# systemic harm and that the authority would be held accountable for.
+# ---------------------------------------------------------------------------
+
+version: "1.0.0"
+
+dimensions:
+  - key: financial_soundness
+    name: Financial Soundness & Capital Adequacy
+    weight: 1.25
+    description: >
+      Whether the applicant has sufficient, verifiable capital and a credible
+      financial position to sustain the declared activities, including own
+      funds, liquidity, audited results, and the quality of financial
+      disclosure.
+    rating_guidance: >
+      0-20: audited statements present, capital comfortably above requirement,
+      no going-concern doubt.
+      21-45: adequate capital but limited audit assurance or thin buffers.
+      46-65: unaudited or incomplete figures, or buffers close to the minimum.
+      66-85: capital shortfall, loss-making with no funding plan, or material
+      unexplained discrepancies between stated and evidenced figures.
+      86-100: insolvency indicators, or financial position that cannot be
+      substantiated at all.
+    keywords:
+      - own funds
+      - capital adequacy
+      - regulatory capital
+      - liquidity
+      - solvency
+      - balance sheet
+      - audited financial statements
+      - auditor
+      - going concern
+      - net assets
+      - profit and loss
+      - cash flow
+      - funding
+      - shareholder loan
+      - ICAAP
+
+  - key: financial_crime
+    name: AML / CFT & Financial Crime Controls
+    weight: 1.25
+    description: >
+      The adequacy of anti-money-laundering and counter-terrorist-financing
+      controls: customer due diligence, sanctions and PEP screening,
+      transaction monitoring, suspicious activity reporting, and the
+      independence and seniority of the compliance function.
+    rating_guidance: >
+      0-20: documented risk-based AML programme, named MLRO, screening and
+      monitoring evidenced, independent testing performed.
+      21-45: programme present but with named weaknesses or untested controls.
+      46-65: policy exists only at a high level, no evidence of operation, or
+      no independent compliance function.
+      66-85: no transaction monitoring, no sanctions screening, or an MLRO
+      without authority or independence.
+      86-100: no AML framework at all, or evidence of deliberate circumvention.
+    keywords:
+      - anti-money laundering
+      - AML
+      - CFT
+      - know your customer
+      - KYC
+      - customer due diligence
+      - enhanced due diligence
+      - sanctions screening
+      - politically exposed
+      - PEP
+      - transaction monitoring
+      - suspicious activity
+      - suspicious transaction report
+      - MLRO
+      - beneficial owner
+      - source of funds
+
+  - key: operational_resilience
+    name: Operational Resilience & Continuity
+    weight: 1.0
+    description: >
+      The applicant's ability to deliver the declared services without
+      material interruption: capacity, incident management, business
+      continuity and disaster recovery planning, testing regime, and stated
+      recovery objectives.
+    rating_guidance: >
+      0-20: tested BCP and DR plans with stated RTO/RPO and recent test
+      evidence.
+      21-45: plans documented but testing is infrequent or undocumented.
+      46-65: generic or template plans with no objectives and no test record.
+      66-85: no continuity planning for a service the applicant declares as
+      critical infrastructure.
+      86-100: known unremediated single points of failure in a critical path.
+    keywords:
+      - business continuity
+      - disaster recovery
+      - BCP
+      - RTO
+      - RPO
+      - incident management
+      - service level agreement
+      - uptime
+      - availability
+      - failover
+      - resilience testing
+      - single point of failure
+      - capacity planning
+      - backup
+
+  - key: cyber_information_security
+    name: Cyber & Information Security
+    weight: 1.15
+    description: >
+      Technical and organisational security controls protecting systems and
+      client data: access control, encryption, vulnerability and patch
+      management, penetration testing, certification, and breach history.
+    rating_guidance: >
+      0-20: recognised certification held, recent independent penetration test
+      with remediation evidence, encryption and access control documented.
+      21-45: controls described credibly but without independent assurance.
+      46-65: security addressed only in general terms, no testing evidence.
+      66-85: unremediated critical findings, or no access control or
+      encryption described for sensitive data.
+      86-100: disclosed material breach without remediation, or security
+      wholly unaddressed for a high-risk service.
+    keywords:
+      - information security
+      - cyber security
+      - ISO 27001
+      - SOC 2
+      - penetration test
+      - vulnerability
+      - patch management
+      - encryption
+      - access control
+      - multi-factor
+      - data protection
+      - GDPR
+      - personal data
+      - breach
+      - security incident
+      - segregation
+
+  - key: governance_fitness
+    name: Governance & Fitness of Management
+    weight: 1.1
+    description: >
+      Board and management arrangements: composition and independence,
+      fit-and-proper evidence for key function holders, ownership and group
+      structure transparency, conflicts of interest, and the presence of a
+      genuine risk and audit function.
+    rating_guidance: >
+      0-20: clear governance structure, fit-and-proper evidence for all key
+      holders, independent risk and audit functions, transparent ownership.
+      21-45: structure documented but with gaps in individual evidence.
+      46-65: key roles combined in one person, or ownership chain unclear
+      beyond the first layer.
+      66-85: no independent oversight, undisclosed conflicts, or opaque
+      ultimate beneficial ownership.
+      86-100: management with disqualifying history, or ownership deliberately
+      obscured.
+    keywords:
+      - board of directors
+      - governance
+      - fit and proper
+      - key function holder
+      - senior management
+      - ultimate beneficial owner
+      - ownership structure
+      - group structure
+      - conflict of interest
+      - internal audit
+      - risk committee
+      - three lines of defence
+      - shareholder
+      - director
+
+  - key: third_party_concentration
+    name: Outsourcing & Third-Party Concentration
+    weight: 0.9
+    description: >
+      Reliance on external providers for material functions: which functions
+      are outsourced, contractual and exit arrangements, provider due
+      diligence, sub-outsourcing chains, and concentration in any single
+      provider or jurisdiction.
+    rating_guidance: >
+      0-20: outsourcing register maintained, material providers assessed,
+      exit plans documented, no single-provider dependency for a critical
+      function.
+      21-45: arrangements described but exit planning is thin.
+      46-65: material function outsourced with no documented due diligence or
+      no right of audit.
+      66-85: critical function dependent on one provider with no alternative
+      and no exit plan.
+      86-100: undisclosed sub-outsourcing of a critical function, or
+      outsourcing that defeats supervisory access.
+    keywords:
+      - outsourcing
+      - third party
+      - vendor
+      - supplier
+      - service provider
+      - sub-outsourcing
+      - cloud provider
+      - exit plan
+      - right of audit
+      - due diligence
+      - concentration risk
+      - dependency
+      - contract
+      - subcontractor
